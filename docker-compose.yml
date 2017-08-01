@@ -1,0 +1,39 @@
+version: '3.3'
+
+services:
+  caddy:
+    image: valentinvieriu/caddy:${CADDY_VERSION}-alpine-onbuild-${CADDY_PLUGINS}
+    build:
+      context: .
+      args:
+        - CADDY_OS=linux
+        - CADDY_ARCH=amd64
+        - CADDY_PLUGINS=http.filemanager
+    volumes:
+        # - ${ROOT_FOLDER}/Caddyfile:/etc/Caddyfile
+        - ${ROOT_FOLDER}/public:/public
+        - ${ROOT_FOLDER}/.caddy:/root/.caddy
+    ports:
+      - "8080:80"
+    environment:
+      - CADDY_VERSION=${CADDY_VERSION}
+  caddy-arm:
+    #   Make sure you run next command before build:
+    #   docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    image: valentinvieriu/caddy:${CADDY_VERSION}-alpine-arm7-onbuild-${CADDY_PLUGINS}
+    build:
+      context: .
+      dockerfile: Dockerfile-arm
+      args:
+        - CADDY_OS=linux
+        - CADDY_ARCH=arm7
+        - CADDY_PLUGINS=http.filemanager
+    ports:
+      - "8081:80"
+    volumes:
+        # - ${ROOT_FOLDER}/Caddyfile:/etc/Caddyfile
+        - ${ROOT_FOLDER}/public:/public
+        - ${ROOT_FOLDER}/.caddy:/root/.caddy
+    environment:
+      - CADDY_VERSION=${CADDY_VERSION}
+
